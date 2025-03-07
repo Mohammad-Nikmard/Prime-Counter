@@ -110,42 +110,6 @@ void main() {
           verifyNever(mockManager.saveCurrentPrimeTimeStamp(timeStamp));
         },
       );
-
-      blocTest<PrimeBloc, PrimeState>(
-        'Set Prime Time Caller Event Without Time Update',
-        setUp: () {
-          mockRepo = MockPrimeRemoteRepository();
-          mockManager = MockPrimeManager();
-          bloc = PrimeBloc(mockRepo, mockManager);
-        },
-        build: () {
-          return bloc;
-        },
-        act: (bloc) => bloc.add(
-          SetPrimeTimerCallerEvent(shouldUpdateTime: false),
-        ),
-        verify: (bloc) {
-          verifyNever(mockManager.saveCurrentPrimeTimeStamp(10));
-        },
-      );
-
-      blocTest<PrimeBloc, PrimeState>(
-        'Set Prime Time Caller Event With Time Update',
-        setUp: () {
-          mockRepo = MockPrimeRemoteRepository();
-          mockManager = MockPrimeManager();
-          bloc = PrimeBloc(mockRepo, mockManager);
-        },
-        build: () {
-          when(mockManager.saveCurrentPrimeTimeStamp(timeStamp)).thenAnswer(
-            (inv) async => true,
-          );
-          return bloc;
-        },
-        act: (bloc) => bloc.add(
-          SetPrimeTimerCallerEvent(shouldUpdateTime: true),
-        ),
-      );
     },
   );
 }

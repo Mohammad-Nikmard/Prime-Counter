@@ -144,8 +144,9 @@ class _HomePageState extends State<HomePage> {
                       );
 
                       if (res != null && context.mounted) {
-                        context.read<PrimeBloc>().add(
-                            SetPrimeTimerCallerEvent(shouldUpdateTime: true));
+                        context
+                            .read<PrimeBloc>()
+                            .add(SetPrimeTimerCallerEvent());
                       }
                     },
                   );

@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       home: BlocProvider(
         create: (context) => PrimeBloc(locator.get(), locator.get())
-          ..add(SetPrimeTimerCallerEvent(shouldUpdateTime: false)),
+          ..add(SetPrimeTimerCallerEvent()),
         child: HomePage(),
       ),
     );

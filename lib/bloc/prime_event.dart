@@ -11,12 +11,10 @@ class SearchPrimeNumberEvent extends PrimeEvent {
 }
 
 class SetPrimeTimerCallerEvent extends PrimeEvent {
-  final bool shouldUpdateTime;
-
-  SetPrimeTimerCallerEvent({required this.shouldUpdateTime});
+  SetPrimeTimerCallerEvent();
 
   @override
-  List<Object?> get props => [shouldUpdateTime];
+  List<Object?> get props => [];
 
   @override
   bool? get stringify => false;

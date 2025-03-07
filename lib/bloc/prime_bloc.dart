@@ -30,6 +30,34 @@ class PrimeBloc extends Bloc<PrimeEvent, PrimeState> {
       );
     }
 
+    Future<void> handlePrimeNumberResult(
+        PrimeEvent event, Emitter<PrimeState> emit, int number) async {
+      final savedTime = _primeManager.getPreviousSavedPrimeTime();
+      final Duration calculatedElapsedTime;
+
+      if (savedTime == 0) {
+        calculatedElapsedTime = Duration.zero;
+      } else {
+        final oldConvertedTime = DateTime.fromMillisecondsSinceEpoch(savedTime);
+        calculatedElapsedTime = DateTime.now().difference(oldConvertedTime);
+      }
+
+      emit(
+        PrimeSearchResponseState(
+          Right(
+            PrimeCalculationResult(
+              primeNumber: number,
+              elapsedTime: calculatedElapsedTime,
+            ),
+          ),
+        ),
+      );
+
+      await _primeManager.saveCurrentPrimeTimeStamp(
+        DateTime.now().millisecondsSinceEpoch,
+      );
+    }
+
     on<SearchPrimeNumberEvent>(
       (event, emit) async {
         emit(PrimeLoadingState());
@@ -42,43 +70,20 @@ class PrimeBloc extends Bloc<PrimeEvent, PrimeState> {
               PrimeSearchResponseState(Left(exceptionMessage)),
             );
 
-            add(SetPrimeTimerCallerEvent(shouldUpdateTime: false));
+            add(SetPrimeTimerCallerEvent());
           },
           (number) async {
             final primeResult = number.isPrime;
 
             if (primeResult) {
-              final savedTime = _primeManager.getPreviousSavedPrimeTime();
-              final Duration calculatedElapsedTime;
-
-              if (savedTime == 0) {
-                calculatedElapsedTime = Duration.zero;
-              } else {
-                final oldConvertedTime =
-                    DateTime.fromMillisecondsSinceEpoch(savedTime);
-                calculatedElapsedTime =
-                    DateTime.now().difference(oldConvertedTime);
-              }
-
-              emit(
-                PrimeSearchResponseState(
-                  Right(
-                    PrimeCalculationResult(
-                      primeNumber: number,
-                      elapsedTime: calculatedElapsedTime,
-                    ),
-                  ),
-                ),
-              );
+              await handlePrimeNumberResult(event, emit, number);
             } else {
               emit(
                 PrimeSearchResponseState(
-                  Left(
-                    'NOT A PRIME NUMBER',
-                  ),
+                  Left('NOT A PRIME NUMBER'),
                 ),
               );
-              add(SetPrimeTimerCallerEvent(shouldUpdateTime: false));
+              add(SetPrimeTimerCallerEvent());
             }
           },
         );
@@ -87,12 +92,6 @@ class PrimeBloc extends Bloc<PrimeEvent, PrimeState> {
 
     on<SetPrimeTimerCallerEvent>(
       (event, emit) async {
-        if (event.shouldUpdateTime) {
-          final time = DateTime.now().millisecondsSinceEpoch;
-
-          await _primeManager.saveCurrentPrimeTimeStamp(time);
-        }
-
         requestCallTimeCounter = 10;
         startTimer();
       },
