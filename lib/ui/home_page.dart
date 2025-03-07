@@ -5,7 +5,6 @@ import 'package:intl/intl.dart';
 import 'package:prime_counter/bloc/prime_bloc.dart';
 import 'package:prime_counter/bloc/prime_event.dart';
 import 'package:prime_counter/bloc/prime_state.dart';
-import 'package:prime_counter/core/DI/locator.dart';
 import 'package:prime_counter/core/constants/constants.dart';
 import 'package:prime_counter/core/gen/fonts.gen.dart';
 import 'package:prime_counter/ui/prime_notice_page.dart';
@@ -20,7 +19,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final currentTime = DateTime.now();
+  final time = DateTime.now();
   late Timer timer;
   late String timeStamp;
 
@@ -28,9 +27,9 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
-    currentTimeDetail = currentTime.calendarDetails;
+    currentTimeDetail = time.calendarDetails;
 
-    timeStamp = currentTime.currentTimeStamp;
+    timeStamp = time.currentTimeStamp;
 
     timer = Timer.periodic(
       const Duration(seconds: 1),
@@ -82,7 +81,7 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
                       TextSpan(
-                        text: '${currentTime.day}. ',
+                        text: '${time.day}. ',
                         style: TextStyle(
                           fontFamily: FontFamily.rr,
                           fontSize: 30,
@@ -138,12 +137,8 @@ class _HomePageState extends State<HomePage> {
                       String? res = await Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => BlocProvider(
-                            create: (context) =>
-                                PrimeBloc(locator.get(), locator.get()),
-                            child: PrimeNoticePage(
-                              result: response,
-                            ),
+                          builder: (context) => PrimeNoticePage(
+                            result: response,
                           ),
                         ),
                       );
